@@ -18,8 +18,8 @@ pub(crate) fn unshare(container: &Container) -> Result<()> {
     }
 
     nix::unshare(container.get_namespaces_clone_flags())?;
-    if_namespace_then!(Namespace::User, container, setuidmap)?;
-    if_namespace_then!(Namespace::User, container, setgidmap)?;
+    //if_namespace_then!(Namespace::User, container, setuidmap)?;
+    //if_namespace_then!(Namespace::User, container, setgidmap)?;
     if_namespace_then!(Namespace::Mount, container, mount_rootfs)?;
     if_namespace_then!(Namespace::Uts, container, sethostname)?;
     Ok(())

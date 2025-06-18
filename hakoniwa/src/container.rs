@@ -407,6 +407,7 @@ impl Container {
 
     /// Returns true if the container needs to configure network.
     pub(crate) fn needs_configure_network(&self) -> bool {
+        return true;
         self.namespaces.contains(&Namespace::Network) && self.network.is_some()
     }
 }

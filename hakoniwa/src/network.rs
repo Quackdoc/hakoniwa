@@ -20,12 +20,20 @@ impl From<Pasta> for Network {
 }
 
 pub(crate) fn configure(container: &Container, child: Pid) -> Result<()> {
-    match &container.network {
-        Some(network) => match network {
-            Network::Pasta(pasta) => configure_pasta(pasta, child)?,
-        },
-        None => unreachable!(),
-    };
+//    match &container.network {
+//        Some(network) => match network {
+//            Network::Pasta(pasta) => configure_pasta(pasta, child)?,
+//        },
+//        None => unreachable!(),
+//    };
+
+    let o = Command::new("newuidmap").args([child.as_raw().to_string(),
+        "0".to_string(), "1000".to_string(), "1".to_string(),
+        "1".to_string(), "100000".to_string(), "65536".to_string()]).output();
+
+    let o = Command::new("newgidmap").args([child.as_raw().to_string(),
+        "0".to_string(), "1000".to_string(), "1".to_string(),
+        "1".to_string(), "100000".to_string(), "65536".to_string()]).output();
 
     log::debug!("================================");
     Ok(())
