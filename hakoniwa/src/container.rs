@@ -54,6 +54,7 @@ pub struct Container {
     pub(crate) landlock_ruleset: Option<crate::landlock::Ruleset>,
     #[cfg(feature = "seccomp")]
     pub(crate) seccomp_filter: Option<crate::seccomp::Filter>,
+    pub(crate) allow_privs: bool,
     pub(crate) runctl: HashSet<Runctl>,
 }
 
@@ -80,6 +81,7 @@ impl Container {
             landlock_ruleset: None,
             #[cfg(feature = "seccomp")]
             seccomp_filter: None,
+            allow_privs: false,
             runctl: HashSet::new(),
         };
 
@@ -130,6 +132,7 @@ impl Container {
             landlock_ruleset: None,
             #[cfg(feature = "seccomp")]
             seccomp_filter: None,
+            allow_privs: false,
             runctl: HashSet::new(),
         }
     }
@@ -389,6 +392,11 @@ impl Container {
     #[cfg(feature = "seccomp")]
     pub fn seccomp_filter(&mut self, filter: crate::seccomp::Filter) -> &mut Self {
         self.seccomp_filter = Some(filter);
+        self
+    }
+
+    pub fn allow_privs(&mut self, bool: bool) -> &mut Self {
+        self.allow_privs = bool;
         self
     }
 
