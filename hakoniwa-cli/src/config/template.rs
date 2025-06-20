@@ -30,6 +30,8 @@ pub(crate) struct CfgConfig {
     pub(crate) landlock: Option<CfgLandlock>,
     #[serde(rename = "seccomp", default)]
     pub(crate) seccomp: CfgSeccomp,
+    #[serde(rename = "allow_privs", default)]
+    pub(crate) allow_privs: CfgAllowPrivs,
     #[serde(rename = "command", default)]
     pub(crate) command: CfgCommand,
 }
@@ -195,6 +197,13 @@ pub(crate) struct CfgLandlockNetRule {
 pub(crate) struct CfgSeccomp {
     #[serde(rename = "path")]
     pub(crate) path: Option<String>,
+}
+
+#[derive(Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CfgAllowPrivs {
+    #[serde(rename = "allow")]
+    pub(crate) allow: Option<bool>, 
 }
 
 #[derive(Deserialize, Default)]

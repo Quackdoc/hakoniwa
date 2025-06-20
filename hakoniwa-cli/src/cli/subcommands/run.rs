@@ -140,6 +140,10 @@ pub(crate) struct RunCommand {
     #[clap(long, default_value = "podman", value_hint = ValueHint::FilePath)]
     seccomp: Option<String>,
 
+    /// Disable setting no new privileges, this may be a security concern. --seccomp must be set to unconfined.
+    #[clap(long, default_value = "false")]
+    allow_privs: Option<bool>,
+
     /// Load configuration from a specified file, ignoring all other cli arguments
     #[clap(short, long, value_hint = ValueHint::FilePath)]
     config: Option<String>,
@@ -289,6 +293,16 @@ impl RunCommand {
         let seccomp = cfg.seccomp.path.unwrap_or("podman".to_string());
         Self::install_seccomp_filter(&mut container, &seccomp)
             .map_err(|e| anyhow!("--config: seccomp: {}", e))?;
+
+        // CFG: allow-privs
+        let allow_privs = cfg.allow_privs.allow;
+        if allow_privs == Some(true) {
+            if seccomp != "unconfined" {
+                println!("seccomp must be unconfined for allowing new privledges.");
+            } else {
+                container.allow_privs(true);
+            }    
+        };
 
         // ARG: -- <COMMAND>...
         // CFG: command::cmdline
@@ -509,6 +523,16 @@ impl RunCommand {
         let seccomp = &self.seccomp.clone().expect("--seccomp: missing value");
         Self::install_seccomp_filter(&mut container, seccomp)
             .map_err(|e| anyhow!("--seccomp: {}", e))?;
+
+        // ARG: --allow-privs
+        let allow_privs = self.allow_privs;
+        if allow_privs == Some(true) {
+            if seccomp != "unconfined" {
+                println!("--seccomp must be unconfined for allowing new privledges.");
+            } else {
+                container.allow_privs(true);
+            }    
+        };
 
         // ARG: -- <COMMAND>...
         let (prog, argv) = (&self.argv[0], &self.argv[1..]);

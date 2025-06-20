@@ -8,7 +8,13 @@ use crate::{seccomp::*, Container};
 pub(crate) fn load(container: &Container) -> Result<()> {
     match &container.seccomp_filter {
         Some(filter) => load_imp(filter),
-        None => nix::set_no_new_privs(),
+        None => {
+            if container.allow_privs == true {
+                Ok(())
+            } else {
+                nix::set_no_new_privs()
+            }
+        }
     }
 }
 
